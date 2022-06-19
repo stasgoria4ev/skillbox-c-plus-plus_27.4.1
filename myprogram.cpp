@@ -23,7 +23,7 @@ public:
 
     void inputName() {
         int countBigBranch = 0;
-        for (int i = 0; i < 2; ++i) {//i - кол-во деревьев
+        for (int i = 0; i < 5; ++i) {//i - кол-во деревьев
             Branch* wood = new Branch();
             std::cout << "\nWood " << i + 1 << " - " << parent << " big branches:" << '\n';
             for (int j = 0; j < parent; ++j) {
