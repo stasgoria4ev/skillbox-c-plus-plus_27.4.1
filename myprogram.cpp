@@ -10,7 +10,8 @@ private:
     int parent;
     int child;
     std::string** bigBranch = nullptr;
-public:
+    std::map<int, std::vector<std::string>> nameBranches;
+public: 
     int getChild() {
         child = std::rand() % 2 + 2;
         return child;
@@ -20,11 +21,11 @@ public:
         parent = std::rand() % 3 + 3;
     }
 
-    void inputName(std::map<int, std::vector<std::string>>& nameBranches) {
+    void inputName() {
         int countBigBranch = 0;
-        for (int i = 0; i < 5; ++i) {//i - кол-во деревьев
+        for (int i = 0; i < 2; ++i) {//i - кол-во деревьев
             Branch* wood = new Branch();
-            std::cout << "\nWood №" << i + 1 << " - " << parent << " big branches:" << '\n';
+            std::cout << "\nWood " << i + 1 << " - " << parent << " big branches:" << '\n';
             for (int j = 0; j < parent; ++j) {
                 countBigBranch++;
                 int woodGetChild = getChild();
@@ -53,7 +54,7 @@ public:
         }
     }
 
-    void search(std::map<int, std::vector<std::string>>& nameBranches, std::string Elfname) {
+    void search(std::string Elfname) {
         for (std::map<int, std::vector<std::string>>::iterator it = nameBranches.begin(); it != nameBranches.end(); ++it) {
             for (int i = 0; i < nameBranches[it->first].size(); ++i) {
                 if (it->second[i] == Elfname)
@@ -65,14 +66,13 @@ public:
 
 int main() {
     std::srand(std::time(nullptr));
-    std::map<int, std::vector<std::string>> nameBranches;
     
     Branch* names = new Branch();
-    names->inputName(nameBranches);
+    names->inputName();
 
-    std::cout << "Enter the Name of the Elf you are looking for: ";
+    std::cout << "\nEnter the Name of the Elf you are looking for: ";
     std::string Elfname;
     std::cin >> Elfname;
-    names->search(nameBranches, Elfname);
+    names->search(Elfname);
     delete names; names = nullptr;
 }
