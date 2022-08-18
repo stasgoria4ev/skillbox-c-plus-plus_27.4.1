@@ -78,7 +78,6 @@ int main() {
     Branch* branch = new Branch(nullptr);
     branch->creatTree();   
 
-    std::string* Elfname = new std::string;
     do {
         branch->good = true;
         std::string* Elfname = new std::string;
@@ -89,10 +88,10 @@ int main() {
                 std::cout << "Invalid search name, please try again...\n";
         } while (*Elfname == "None");
         branch->search(*Elfname);
+        delete Elfname; Elfname = nullptr;
         if (!branch->good) {
             std::cout << "There is no such Elf on this tree, please try again...\n";
         }
     } while (!branch->good);
-    delete Elfname; Elfname = nullptr;
     delete branch; branch = nullptr;
 }
