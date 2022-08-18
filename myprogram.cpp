@@ -1,78 +1,98 @@
 #include <iostream>
-#include <ctime>
 #include <vector>
+#include <ctime>
 #include <string>
-#include <map>
 
-class Branch
-{
-private:
-    int parent;
-    int child;
-    std::string** bigBranch = nullptr;
-    std::map<int, std::vector<std::string>> nameBranches;
-public: 
-    int getChild() {
-        child = std::rand() % 2 + 2;
-        return child;
-    }
-    
-    Branch() {
-        parent = std::rand() % 3 + 3;
+class Branch {
+    Branch* parent; 
+    std::vector <Branch*> children;
+    std::string nameElf = "unknown";
+public:
+    void addChild(Branch* parent)
+    {
+        Branch* child = new Branch(this);
+        children.push_back(child);
     }
 
-    void inputName() {
-        int countBigBranch = 0;
-        for (int i = 0; i < 5; ++i) {//i - кол-во деревьев
-            Branch* wood = new Branch();
-            std::cout << "\nWood " << i + 1 << " - " << parent << " big branches:" << '\n';
-            for (int j = 0; j < parent; ++j) {
-                countBigBranch++;
-                int woodGetChild = getChild();
-                std::cout << " Big Branch " << j + 1 << " contains " << "medium branches = " << woodGetChild << ":" << '\n';
-                woodGetChild++;
-                    
-                bigBranch = new std::string*[woodGetChild]; // динамическая инициализация массива
-                for (int z = 0; z < woodGetChild; z++) {
-                    if (z == 0) std::cout << "Enter Elf's name " << z + 1 << " for the house on the Big Branch: ";
-                    else std::cout << "Enter Elf's name " << z + 1 << " for the house on the Middle Branch: ";
-                    std::string name;
-                    std::cin >> name;
-                    bigBranch[z] = new std::string(name);
-                    
-                }
-                    
-                std::vector<std::string> temp;
-                for (int s = 0; s < woodGetChild; s++) { 
-                    if (*bigBranch[s] != "None")
-                        temp.push_back(*bigBranch[s]);
-                }
-                        
-                nameBranches.insert(std::pair<int, std::vector<std::string>>(countBigBranch, temp));
+    void creatTree() {
+        for (int i = 0; i < std::rand() % 3 + 3; ++i) {
+            this->addChild(this);
+            
+            std::cout << "Enter the name of the elf from the house on the Big Branch: ";
+            std::cin >> children[i]->nameElf;
+        }
+        for (int j = 0; j < this->children.size(); j++) {
+            for (int z = 0; z < std::rand() % 2 + 2; ++z) {
+                this->children[j]->addChild(this);
+                
+                std::cout << "Enter the name of the elf from the house on the Middle Branch: ";
+                std::cin >> children[j]->children[z]->nameElf;
             }
-            delete wood; wood = nullptr;
+        }
+    }
+
+    bool good = true;
+    void search(std::string& Elfname) { 
+        for (int i = 0; i < children.size(); ++i) {
+            if (parent == nullptr && i > 0 && children[i - 1]->children.empty())
+                return;
+            if (parent == nullptr && children[i]->nameElf == Elfname) {
+                this->good = true;
+                int count = 0;
+                for (int j = 0; j < children[i]->children.size(); j++) { 
+                    if (children[i]->children[j]->nameElf != "None")
+                        count++;
+                }
+                std::cout << "The desired number of neighbors of the large branch = " << count << '\n';
+                return;
+            } else if (children[i]->nameElf == Elfname ) {
+                this->good = true;
+                int count = 0;
+                for (int j = 0; j < this->children.size(); j++) { 
+                    if (this->children[j]->nameElf != "None" && this->children[j] != children[i])
+                        count++;
+                }
+                if (this->nameElf != "None")
+                    count++;
+                std::cout << "The desired number of neighbors of the middle branch = " << count << '\n';
+                this->children.clear();
+            } else if (parent != nullptr && children[i]->nameElf != Elfname ) {
+                this->good = false;
+            } else 
+                children[i]->search(Elfname);
+
+            if (parent == nullptr && children[i]->good == false) 
+                good = false;
+            else if (parent == nullptr)
+                good = true;
         }
     }
 
-    void search(std::string Elfname) {
-        for (std::map<int, std::vector<std::string>>::iterator it = nameBranches.begin(); it != nameBranches.end(); ++it) {
-            for (int i = 0; i < nameBranches[it->first].size(); ++i) {
-                if (it->second[i] == Elfname)
-                std::cout << "Number of neighbors = " << nameBranches[it->first].size() - 1 << '\n';
-            }
-        }
+    Branch(Branch* inParent) {
+        parent = inParent;
     }
 };
 
 int main() {
     std::srand(std::time(nullptr));
-    
-    Branch* names = new Branch();
-    names->inputName();
+    Branch* branch = new Branch(nullptr);
+    branch->creatTree();   
 
-    std::cout << "\nEnter the Name of the Elf you are looking for: ";
-    std::string Elfname;
-    std::cin >> Elfname;
-    names->search(Elfname);
-    delete names; names = nullptr;
+    std::string* Elfname = new std::string;
+    do {
+        branch->good = true;
+        std::string* Elfname = new std::string;
+        do {
+            std::cout << "\nEnter the Name of the Elf you are looking for: ";
+            std::cin >> *Elfname;
+            if (*Elfname == "None")
+                std::cout << "Invalid search name, please try again...\n";
+        } while (*Elfname == "None");
+        branch->search(*Elfname);
+        if (!branch->good) {
+            std::cout << "There is no such Elf on this tree, please try again...\n";
+        }
+    } while (!branch->good);
+    delete Elfname; Elfname = nullptr;
+    delete branch; branch = nullptr;
 }
