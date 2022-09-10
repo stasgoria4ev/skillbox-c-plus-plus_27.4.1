@@ -65,25 +65,42 @@ public:
     }
 };
 
+class Forest {
+    Branch* branches[2];
+public:
+    Forest() {
+        for (int i = 0; i < sizeof(branches) / sizeof(branches[0]); ++i) {
+            std::cout << "Tree" << i + 1 << ":\n";
+            branches[i] = new Branch(nullptr);
+            branches[i]->creatTree();
+        }
+    }
+
+    bool treeSearch(std::string& Elfname) {
+        for (int i = 0; i < sizeof(branches) / sizeof(branches[0]); ++i) {
+            if (branches[i]->search(Elfname))
+                return true;
+        }
+        return false;
+    }
+};
+
 int main() {
     std::srand(std::time(nullptr));
-    Branch* branch = new Branch(nullptr);
-    branch->creatTree();   
+    Forest* forest = new Forest;
 
-    bool* searchElfName = new bool;
+    bool searchElfName;
     do {
-        std::string* Elfname = new std::string;
+        std::string Elfname;
         do {
             std::cout << "\nEnter the Name of the Elf you are looking for: ";
-            std::cin >> *Elfname;
-            if (*Elfname == "None")
+            std::cin >> Elfname;
+            if (Elfname == "None")
                 std::cout << "Invalid search name, please try again...\n";
-        } while (*Elfname == "None");
-        delete Elfname; Elfname = nullptr;
-        *searchElfName = branch->search(*Elfname);
+        } while (Elfname == "None");
+        searchElfName = forest->treeSearch(Elfname);
         if (!searchElfName) 
             std::cout << "There is no such Elf on this tree, please try again...\n";
     } while (!searchElfName);
-    delete searchElfName; searchElfName = nullptr;
-    delete branch; branch = nullptr;
+    delete forest; forest = nullptr;
 }
