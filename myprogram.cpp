@@ -66,7 +66,7 @@ public:
 };
 
 class Forest {
-    Branch* branches[2];
+    Branch* branches[5];
 public:
     Forest() {
         for (int i = 0; i < sizeof(branches) / sizeof(branches[0]); ++i) {
