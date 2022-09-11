@@ -70,7 +70,7 @@ class Forest {
 public:
     Forest() {
         for (int i = 0; i < sizeof(branches) / sizeof(branches[0]); ++i) {
-            std::cout << "Tree" << i + 1 << ":\n";
+            std::cout << "Tree " << i + 1 << ":\n";
             branches[i] = new Branch(nullptr);
             branches[i]->creatTree();
         }
